@@ -49,8 +49,8 @@ class VotersController < ApplicationController
   end
 
   private
-
+    
     def voter_params
-      params.require(:voter).permit(:name, :party)
+      params.require(:voter).permit(:name,, :party)
     end
 end
