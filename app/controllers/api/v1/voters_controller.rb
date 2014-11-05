@@ -1,56 +1,44 @@
-class VotersController < ApplicationController
-  # GET /voters
-  # GET /voters.json
-  def index
-    @voters = Voter.all
+class API::V1::VotersController < ActionController::API
+  include ActionController::HttpAuthentication::Token::ControllerMethods
 
-    render json: @voters
-  end
+  before_filter :load_user, only: [:show, :update]
+  before_filter :restrict_access_to_user, only: [:update, :show]
 
-  # GET /voters/1
-  # GET /voters/1.json
   def show
-    @voter = Voter.find(params[:id])
-
+    # @voter = Voter.find(params[:id])
     render json: @voter
   end
 
-  # POST /voters
-  # POST /voters.json
   def create
     @voter = Voter.new(voter_params)
-
     if @voter.save
-      render json: @voter, status: :created, location: @voter
+      render json: @voter.as_json(include_token: true), status: :created, location: api_v1_voter_path(@voter)
     else
-      render json: @voter.errors, status: :unprocessable_entity
+      render json: { errors: @voter.errors }, status: :bad_request
     end
   end
 
-  # PATCH/PUT /voters/1
-  # PATCH/PUT /voters/1.json
   def update
-    @voter = Voter.find(params[:id])
-
     if @voter.update(voter_params)
-      head :no_content
+      render json: @voter, status: :ok
     else
-      render json: @voter.errors, status: :unprocessable_entity
+      render json: { errors: @voter.errors }, status: :bad_request
     end
-  end
-
-  # DELETE /voters/1
-  # DELETE /voters/1.json
-  def destroy
-    @voter = Voter.find(params[:id])
-    @voter.destroy
-
-    head :no_content
   end
 
   private
-    
-    def voter_params
-      params.require(:voter).permit(:name,, :party)
+
+  def load_user
+    @voter = Voter.find(params[:id])
+  end
+
+  def restrict_access_to_user
+    unless @voter.token == params[:token]
+      render nothing: true, status: :unauthorized
     end
+  end
+
+  def voter_params
+    params.require(:voter).permit(:name, :email, :party)
+  end
 end

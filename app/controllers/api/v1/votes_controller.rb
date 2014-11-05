@@ -1,56 +1,30 @@
-class VotesController < ApplicationController
-  # GET /votes
-  # GET /votes.json
-  def index
-    @votes = Vote.all
+class API::V1::VotesController < ApplicationController
+  before_filter :set_voter, only: [:create]
+  before_filter :restrict_access, only: [:create]
 
-    render json: @votes
-  end
-
-  # GET /votes/1
-  # GET /votes/1.json
-  def show
-    @vote = Vote.find(params[:id])
-
-    render json: @vote
-  end
-
-  # POST /votes
-  # POST /votes.json
   def create
     @vote = Vote.new(vote_params)
-
     if @vote.save
-      render json: @vote, status: :created, location: @vote
+      render json: @vote, status: :created
     else
-      render json: @vote.errors, status: :unprocessable_entity
+      render json: { errors: @vote.errors }, status: :bad_request
     end
-  end
 
-  # PATCH/PUT /votes/1
-  # PATCH/PUT /votes/1.json
-  def update
-    @vote = Vote.find(params[:id])
-
-    if @vote.update(vote_params)
-      head :no_content
-    else
-      render json: @vote.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /votes/1
-  # DELETE /votes/1.json
-  def destroy
-    @vote = Vote.find(params[:id])
-    @vote.destroy
-
-    head :no_content
   end
 
   private
-    
-    def vote_params
-      params.require(:vote).permit(:voter_id, :candidate)
+
+  def restrict_access
+    unless @voter.token == params[:token]
+      render nothing: true, status: :unauthorized
     end
+  end
+
+  def vote_params
+    params.require(:vote).permit(:voter_id, :candidate_id)
+  end
+
+  def load_user
+    @voter = Voter.find(params[:vote][:voter_id])
+  end
 end
