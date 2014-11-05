@@ -6,6 +6,8 @@ class Voter < ActiveRecord::Base
 
   before_save : add_token
 
+  has_many: votes
+  
   def as_json(options)
     hash = {id: id,
             name: name,
