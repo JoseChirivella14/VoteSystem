@@ -5,3 +5,15 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+
+Candidate.destroy_all
+
+@candidates = []
+
+10.times do
+  candidate = Candidate.create!(name: Faker::Name.name,
+                                party: ["Republicans", "Democrats", "Libertines"].sample)
+
+                                @candidates << candidate
+end
