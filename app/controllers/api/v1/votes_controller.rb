@@ -1,6 +1,11 @@
-class API::V1::VotesController < ApplicationController
-  before_filter :set_voter, only: [:create]
+class API::V1::VotesController < ActionController::API
+  before_filter :load_user, only: [:create]
   before_filter :restrict_access, only: [:create]
+
+  def index
+    @votes = Vote.all
+    render json: @votes
+  end
 
   def create
     @vote = Vote.new(vote_params)

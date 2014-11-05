@@ -4,10 +4,10 @@ class Voter < ActiveRecord::Base
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true
 
-  before_save : add_token
+  before_save :add_token
 
-  has_many: votes
-  
+  has_many :votes
+
   def as_json(options)
     hash = {id: id,
             name: name,

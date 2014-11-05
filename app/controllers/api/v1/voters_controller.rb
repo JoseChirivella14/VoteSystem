@@ -4,6 +4,11 @@ class API::V1::VotersController < ActionController::API
   before_filter :load_user, only: [:show, :update]
   before_filter :restrict_access_to_user, only: [:update, :show]
 
+  def index
+    @voters = Voter.all
+    render json: @voters
+  end
+
   def show
     # @voter = Voter.find(params[:id])
     render json: @voter

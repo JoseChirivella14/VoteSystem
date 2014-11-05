@@ -1,7 +1,31 @@
 Rails.application.routes.draw do
-  resources :votes, except: [:new, :edit]
-  resources :voters, except: [:new, :edit]
-  resources :candidates, except: [:new, :edit]
+  resources :votes, except: [:new, :show, :edit]
+  resources :voters, except: [:new, :show, :edit]
+  resources :candidates, except: [:new, :show, :edit]
+
+  resources :candidates
+
+  namespace :api do
+    namespace :v1 do
+      resources :candidates
+    end
+  end
+
+  resources :votes
+
+  namespace :api do
+    namespace :v1 do
+      resources :votes
+    end
+  end
+
+  resources :voters
+
+  namespace :api do
+    namespace :v1 do
+      resources :voters
+    end
+  end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
